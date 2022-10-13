@@ -2,14 +2,9 @@
 
 HashTable::HashTable(int m)
 {
-    books = new Book[10];
+    books.resize(m);
     this->m = m;
     n = 0;
-}
-
-HashTable::~HashTable()
-{
-    delete[] books;
 }
 
 int HashTable::getInd(unsigned long long key)
@@ -22,13 +17,13 @@ int HashTable::getNewInd(unsigned long long key,int ind)
     return ((key/m)+ind)%m;
 }
 
-void HashTable::insBook(Book b)
+void HashTable::insBook(Book* b)
 {
-    int ind = this->getInd(b.getIsbn());
+    int ind = this->getInd(b->getIsbn());
     while (!books[ind].isClear()) {
-        ind = this->getNewInd(b.getIsbn(), ind);
+        ind = this->getNewInd(b->getIsbn(), ind);
     }
-    books[ind] = b;
+    books[ind] = *b;
     n++;
     books[ind].setClear(false);
 }
@@ -54,3 +49,9 @@ void HashTable::removeBook(Book b)
         books[i].setDeleted(true);
     }
 }
+
+int HashTable::size()
+{
+    return books.size();
+}
+

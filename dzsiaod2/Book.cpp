@@ -1,18 +1,13 @@
 #include "Book.h"
 
-string Book::getAuthor()
-{
-    return author;
-}
-
-string Book::getLabel()
-{
-    return label;
-}
-
 unsigned long long Book::getIsbn()
 {
     return isbn;
+}
+
+int Book::getPosition()
+{
+    return position;
 }
 
 bool Book::isClear()
@@ -35,11 +30,10 @@ void Book::setDeleted(bool f)
     deleted = f;
 }
 
-Book::Book(unsigned long long isbn,string author, string label)
+Book::Book(unsigned long long isbn, int pos)
 {
     this->isbn = isbn;
-    this->label = label;
-    this->author = author;
+    position = pos;
 }
 
 Book::Book()

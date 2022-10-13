@@ -6,20 +6,18 @@ using namespace std;
 class Book
 {
 public:
-	string getAuthor();
-	string getLabel();
 	unsigned long long getIsbn();
+	int getPosition();
 	bool isClear();
 	void setClear(bool);
 	bool isDeleted();
 	void setDeleted(bool);
-	Book(unsigned long long,string,string);
+	Book(unsigned long long,int);
 	Book();
 
 private:
 	unsigned long long isbn;
-	string author;
-	string label;
+	int position;
 	bool clear = true;
 	bool deleted = false;
 };
