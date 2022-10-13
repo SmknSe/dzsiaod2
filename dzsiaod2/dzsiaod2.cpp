@@ -6,16 +6,10 @@
 #include "HashTable.h"
 using namespace std;
 
-//struct Item
-//{
-//	bool Pins = true;
-//	int position;
-//};
-//
 static int items_c;
-//
-//void fillHashTable(vector<Item>& table);
-//
+
+void fillHashTable(HashTable& table);
+
 void write(ostream& os, string a)
 {
 	os.write((char*)a.data(), 50);
@@ -23,13 +17,17 @@ void write(ostream& os, string a)
 //
 int fileItems_c() {
 	ifstream in;
-	in.open("1.txt");
-	string temp;
-	getline(in, temp);
+	in.open("1.txt", ios::binary | ios::in);
+	char* buf = new char[50];
+	int c = 0;
+	while(!in.eof()) {
+		in.read(buf, 50);
+		c++;
+	}
 	in.close();
-	return temp.length() / 50;
+	return c-1;
 }
-//
+
 //void readAllFile()
 //{
 //	ifstream in;
@@ -40,12 +38,11 @@ int fileItems_c() {
 //		cout << buf << endl;
 //	}
 //}
-//
+
 unsigned long long readKey(int t)
 {
 	ifstream in;
 	in.open("1.txt", ios::binary | ios::in);
-	string a;
 	in.seekg(50 * t, ios::beg);
 	unsigned long long tmp;
 	in >> tmp;
@@ -76,37 +73,13 @@ void autoFilling() {
 	write(f, a);
 	f.close();
 }
-//
-//int hashFunc(string s) {
-//	int key = stoi(s.substr(6, 9));
-//	return key % 10;
-//}
-//
+
 //void reHash(vector<Item>& table) {
 //	vector<Item> temp(table.size() * 2);
 //	fillHashTable(temp);
 //	table = temp;
 //
 //};
-//
-//void writeItemInTable(vector<Item>& table, int t) {
-//	string item = readKey(t);
-//	int key = hashFunc(item);
-//	bool flag = false;
-//	for (int i = key; i < table.size(); i++) {
-//		if (table[i].Pins) {
-//			table[i].Pins = false;
-//			table[i].position = t;
-//			flag = true;
-//			items_c++;
-//			break;
-//		}
-//	}
-//	if (!flag) {
-//		table.push_back(Item{ false, t });
-//		items_c++;
-//	}
-//}
 //
 
 
@@ -123,47 +96,57 @@ void fillHashTable(HashTable& table) {
 }
 
 
-//
+
 void print(HashTable h)
 {
 	for (int i = 0; i < h.books.size(); i++) {
 		if (!h.books[i].isClear()) {
-			cout << i << " " << readKey(h.books[i].getPosition()) << " удалена: " << h.books[i].isDeleted() << endl;
+			cout << i << " " << readKey(h.books[i].getPosition()) << endl;
 		}
 		else cout << i << " empty\n";
 	}
 }
-//
-//void removeBook(HashTable& table, int item) {
-//	string delStr = readKey(table[item].position);
-//	table[item].Pins = true;
-//	table[item].position = NULL;
-//
-//	vector<string> temp;
-//
-//	ifstream in;
-//	in.open("1.txt", ios::binary | ios::in);
-//	char* buf = new char[40];
-//	for (int i = 0; i < fileItems_c(); i++) {
-//		in.read(buf, 40);
-//		string t = buf;
-//		if (t != delStr) {
-//			temp.push_back(t);
-//		}
-//	}
-//	in.close();
-//
-//	ofstream f;
-//	f.open("1.txt", ios::binary | ios::out);
-//	for (int i = 0; i < temp.size(); i++) {
-//		f.write((char*)temp[i].data(), 40);
-//	}
-//	f.close();
-//	table.clear();
-//	table.resize(10);
-//	fillHashTable(table);
-//	return table;
-//}
+
+void remove(HashTable& h, int item) {
+	unsigned long long delKey = readKey(h.books[item].getPosition());
+	h.books[item].setDeleted(true);
+
+	vector<string> temp;
+
+	ifstream in;
+	in.open("1.txt", ios::binary | ios::in);
+	char* buf = new char[50];
+	for (int i = 0; i < fileItems_c(); i++) {
+		in.read(buf, 50);
+		string t = buf;
+		t = t.substr(0, 20);
+		if (t != to_string(delKey)) {
+			temp.push_back(buf);
+		}
+	}
+	in.close();
+	
+	ofstream f;
+	f.open("1.txt", ios::binary | ios::out);
+	for (int i = 0; i < temp.size(); i++) {
+		f.write((char*)temp[i].data(), 50);
+	}
+	f.close();
+	h.books.clear();
+	h.books.resize(10);
+	fillHashTable(h);
+}
+
+void find(HashTable h,unsigned long long k) {
+	int p = h.findBook(k);
+	cout << p << endl;
+	ifstream in;
+	in.open("1.txt", ios::binary | ios::in);
+	in.seekg(50 * p, ios::beg);
+	string isbn, name, label;
+	in >> isbn; in >> name; in >> label;
+	cout << isbn << " " << name << " " << label << endl;
+}
 //
 //void printItem(vector<Item>& table, string date) {
 //	int key = hashFunc(date);
@@ -207,11 +190,16 @@ int main() {
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;*/
 	setlocale(0, "");
 	autoFilling();
-	HashTable h(11);
+	HashTable h(10);
 	fillHashTable(h);
 	cout << "Таблица:\n";
 	print(h);
 	int n;
 	cout << "Введите номер удаляемой книги: "; cin >> n;
-	//removeBook(h,n);
+	remove(h,n);
+	cout << "После удаления:\n";
+	print(h);
+	unsigned long long k;
+	cout << "Введите ключ для поиска: "; cin >> k;
+	find(h,k);
 }

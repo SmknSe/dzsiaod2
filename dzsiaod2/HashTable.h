@@ -7,12 +7,13 @@ class HashTable
 public:
 	HashTable(int m);
 	int getInd(unsigned long long);
-	int getNewInd(unsigned long long,int);
+	unsigned long long getNewInd(unsigned long long);
 	void insBook(Book*);
-	int findBook(Book);
-	void removeBook(Book);
+	int findBook(unsigned long long);
+	void removeBook(Book*);
 	int size();
 	friend void print(HashTable);
+	friend void remove(HashTable&,int);
 
 private:
 	int m;
