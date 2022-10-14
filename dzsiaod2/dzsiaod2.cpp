@@ -5,6 +5,8 @@
 #include <ctime>
 #include "HashTable.h"
 #include<random>
+
+#define TableSize 111
 using namespace std;
 
 static int items_c;
@@ -82,11 +84,14 @@ string randStr(int n) {
 void bigAutoFilling(int n) {
 	ofstream f;
 	f.open("1.txt", ios::binary | ios::out);
-	string a;
+	string a,b,c;
 	for (int i = 0; i < n; i++)
 	{
-		a = rand20() + " " + randStr(5) + " " + randStr(10)+" ";
-		a = "12345678901234567897 Ti yey ";
+		//a = rand20() + " " + randStr(5) + " " + randStr(10)+" ";
+		a = rand20()+" ";
+		b = randStr(5)+" ";
+		c = randStr(10)+" ";
+		a += b + c;
 		write(f, a);
 	}
 	f.close();
@@ -146,7 +151,7 @@ void remove(HashTable& h, int item) {
 	}
 	f.close();
 	h.books.clear();
-	h.books.resize(10);
+	h.resize(TableSize);
 	fillHashTable(h);
 }
 
@@ -163,9 +168,10 @@ void find(HashTable h, unsigned long long k) {
 
 int main() {
 	setlocale(0, "");
-	bigAutoFilling(9);
+	srand(time(NULL));
+	bigAutoFilling(100);
 	//autoFilling();
-	HashTable h(10);
+	HashTable h(TableSize);
 	fillHashTable(h);
 	cout << "Таблица:\n";
 	print(h);
@@ -179,19 +185,19 @@ int main() {
 	unsigned int start_time = clock();
 
 	cout << "Поиск первого элемента в файле:" << endl;
-	find(h, 12345678901234567891);
+	find(h, readKey(0));
 	unsigned int end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 
 	start_time = clock();
 	cout << "Поиск серединного элемента в файле:" << endl;
-	find(h, 12345678901234567898);
+	find(h, readKey(50));
 	end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 
 	start_time = clock();
 	cout << "Поиск крайнего элемента в файле:" << endl;
-	find(h, 12345678901234567892);
+	find(h, readKey(98));
 	end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 }
