@@ -1,5 +1,10 @@
 #include "HashTable.h"
 
+void HashTable::resize(int n)
+{
+    books.resize(n);
+}
+
 HashTable::HashTable(int m)
 {
     books.resize(m);
@@ -33,8 +38,8 @@ void HashTable::insBook(Book* b)
 int HashTable::findBook(unsigned long long key)
 {
     int i = this->getInd(key);
+    unsigned long long sm = this->getNewInd(key);
     while ((!books[i].isClear() || books[i].isDeleted()) && key != books[i].getIsbn()) {
-        unsigned long long sm = this->getNewInd(key);
         if (sm != 0) i = (i + sm) % m;
         else i = (i++) % m;
     }
