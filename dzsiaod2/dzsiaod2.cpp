@@ -6,7 +6,7 @@
 #include "HashTable.h"
 #include<random>
 
-#define TableSize 111
+#define TableSize 1111111
 using namespace std;
 
 static int items_c;
@@ -17,7 +17,7 @@ void write(ostream& os, string a)
 {
 	os.write((char*)a.data(), 50);
 }
-//
+
 int fileItems_c() {
 	ifstream in;
 	in.open("1.txt", ios::binary | ios::in);
@@ -87,7 +87,6 @@ void bigAutoFilling(int n) {
 	string a,b,c;
 	for (int i = 0; i < n; i++)
 	{
-		//a = rand20() + " " + randStr(5) + " " + randStr(10)+" ";
 		a = rand20()+" ";
 		b = randStr(5)+" ";
 		c = randStr(10)+" ";
@@ -106,6 +105,7 @@ void reHash(HashTable& table) {
 void fillHashTable(HashTable& table) {
 	int t = fileItems_c();
 	for (int i = 0; i < t; i++) {
+		if (i % 100000 == 0) cout << i << endl;
 		table.insBook(new Book(readKey(i),i));
 		float n = (float)table.n / (float)table.size();
 		if (n >= 0.75) {
@@ -151,6 +151,7 @@ void remove(HashTable& h, int item) {
 	}
 	f.close();
 	h.books.clear();
+	h.n = 0;
 	h.resize(TableSize);
 	fillHashTable(h);
 }
@@ -169,11 +170,12 @@ void find(HashTable h, unsigned long long k) {
 int main() {
 	setlocale(0, "");
 	srand(time(NULL));
-	bigAutoFilling(100);
+	bigAutoFilling(1000000);
+	cout << "Filled\n";
 	//autoFilling();
 	HashTable h(TableSize);
 	fillHashTable(h);
-	cout << "Таблица:\n";
+	/*cout << "Таблица:\n";
 	print(h);
 	cout << "Размер таблицы: " << h.size() << endl;
 
@@ -181,23 +183,22 @@ int main() {
 	cout << "Введите номер удаляемой книги: "; cin >> n;
 	remove(h,n);
 	cout << "После удаления:\n";
-	print(h);
+	print(h);*/
+	cout << "Поиск первого элемента в файле: 0" << endl;
 	unsigned int start_time = clock();
-
-	cout << "Поиск первого элемента в файле:" << endl;
 	find(h, readKey(0));
 	unsigned int end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 
+	cout << "Поиск серединного элемента в файле: 500000" << endl;
 	start_time = clock();
-	cout << "Поиск серединного элемента в файле:" << endl;
-	find(h, readKey(50));
+	find(h, readKey(500000));
 	end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 
+	cout << "Поиск крайнего элемента в файле: 1000000" << endl;
 	start_time = clock();
-	cout << "Поиск крайнего элемента в файле:" << endl;
-	find(h, readKey(98));
+	find(h, readKey(1000000));
 	end_time = clock();
 	cout << "Время, затраченное на поиск: " << end_time - start_time << endl;
 }

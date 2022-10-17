@@ -3,12 +3,12 @@
 void HashTable::resize(int n)
 {
     books.resize(n);
+    this->m = n;
 }
 
 HashTable::HashTable(int m)
 {
-    books.resize(m);
-    this->m = m;
+    this->resize(m);
     n = 0;
 }
 
@@ -25,9 +25,9 @@ unsigned long long HashTable::getNewInd(unsigned long long key)
 void HashTable::insBook(Book* b)
 {
     int ind = this->getInd(b->getIsbn());
+    unsigned long long sm = this->getNewInd(b->getIsbn());
     while (!books[ind].isClear()) {
-        unsigned long long sm = this->getNewInd(b->getIsbn());
-        if (sm != 0) ind = (ind + sm) % m;
+        if (sm != 0 && sm%m!=0) ind = (ind + sm) % m;
         else ind = (ind++) % m;
     }
     books[ind] = *b;
